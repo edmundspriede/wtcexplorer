@@ -473,4 +473,25 @@ function page_array($nNumRows,$nRecsPerPage = 20,$nPage = 1)
     }
     return $aPages;
 }
+
+function fetchData($rRes,$cPrefix="",$nSelectedId="")
+{
+   $aResult=array();
+
+   if ($rRes->num_rows>0)
+       while ($aRow=$rRes->fetch_assoc())
+       {
+           if(!empty($cPrefix))
+               $aRow=addKeyPrefix($aRow,$cPrefix);
+
+           if(!empty($nSelectedId))
+           {
+               if($aRow[$cPrefix."id"]==$nSelectedId?$nSelectedId:"")
+                   $aRow["selected"]=1;
+           }
+
+           $aResult[]=$aRow;
+       }
+   return $aResult;
+}
 ?>
