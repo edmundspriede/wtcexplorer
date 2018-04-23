@@ -141,3 +141,18 @@ function pools($cAction, $aParams, &$aResult)
 	}
 	return false;
 }
+
+function latest_db_block (&$aResult) {
+    
+    $sSQL = 'SELECT MAX(number) as maxn FROM blocks';
+    $rRes = mysql_get($sSQL);
+    if (mysql_num_rows($rRes) > 0) 
+			{
+				$aResult = mysql_fetch_array($rRes);
+				return $aResult['maxn'];  
+			}
+                        
+    else return 0;                    
+    
+    
+}
