@@ -1,0 +1,12 @@
+{
+    "name": "edmundspriede/wtcexplorer",
+    "description": "Waltonchain pool explorer",
+    "type": "project",
+    "authors": [
+        {
+            "name": "Edmunds Priede",
+            "email": "edmunds@kls.lv"
+        }
+    ],
+    "require": {}
+}
