@@ -47,27 +47,34 @@ sync();
 
 function sync() {
     
+    
+    $latest_db =  latest_db_block($aRes);
+    
+  
     $walton = new Ethereum('192.168.10.212', 8545);
     $latest = $walton->eth_blockNumber();
-    
     $latest = decode_hex_($latest);
     
-    for ($b = 0 ; $b <= $latest ; $b++) {
+    if (($latest - $latest_db) > 0  ) {
         
-        $block = $walton->eth_getBlockByNumber('0x'.dechex($b));
+        $b = $latest_db + 1;
+
+        for ($b  ; $b <= $latest ; $b++) {
+
+            $block = $walton->eth_getBlockByNumber('0x'.dechex($b));
+
+            $params['number'] = decode_hex_($block->number);
+            $params['timestamp'] = decode_hex_($block->timestamp);
+            $params['miner'] = $block->miner;
+            $params['data'] = $block->extraData;
+            $params['data_readable'] = hex2str($block->extraData, true);
+
+
+            blocks('I' , $params , $aRes );
+
+            echo "block : ". $b . 'OK'.'<br />';
         
-        $params['number'] = decode_hex_($block->number);
-        $params['timestamp'] = decode_hex_($block->timestamp);
-        $params['miner'] = $block->miner;
-        $params['data'] = $block->extraData;
-        $params['data_readable'] = hex2str($block->extraData, true);
-        
-        
-        blocks('I' , $params , $aRes );
-        
-        echo "block : ". $b . 'OK'.'<br />';
-        
-        
+    }   
         
     }
     
