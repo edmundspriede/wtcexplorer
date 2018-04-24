@@ -1,0 +1,20 @@
+@media print {
+    
+div#topmenu_background{display:none;}
+div#topmenu{display:none;}
+div#menu{display:none;}
+div.logout{display:none;}
+div.tool{display:none;}
+div#command{display:none;}
+div#small{display:none;}
+td.curruser_td{display:none;}
+td.subsubmenu_td{display:none;}
+td.submenu_td{display:none;}
+td.topmenu_td{display:none;}
+td.button{display:none;}
+
+div#tl_content{display:block;margin:0;padding:0;position:absolute;top:0;left:0;}
+
+/*div#big{display:block;margin:0;position:absolute;top:0;left:0;width:632px;}*/
+div#big{position: relative;display:block;margin:0;left:0;top:0}
+}

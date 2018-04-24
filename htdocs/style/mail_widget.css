@@ -1,0 +1,129 @@
+/* widget */
+#mail-widget {
+    margin-top: 2px;
+    position: relative;
+}
+
+#mail-widget > div {
+    width: 300px;
+   
+}
+
+/* refresh button */
+#mail-widget a.refresh {
+    background-image:url('../images/button_bg.gif');
+    background-repeat:repeat-x;
+    color: #000000;
+    background-color:#cccccc;
+    border:1px solid #000000;
+    height: 20px;
+    margin: 0px 2px;
+    text-align:center;
+    cursor:pointer;
+    font-weight:bold;
+    font-size:10px;
+    padding-bottom:2px;
+    width:98px;
+    display: block;
+}
+
+#mail-widget a.refresh:hover {
+    border:1px solid #31d80a;
+}
+
+#mail-widget a.refresh i.fa-spin {
+    color: #f0933c;
+}
+
+#mail-widget tr.read td {
+    background-color: #fff;
+}
+
+#mail-widget tr.unread td {
+    font-weight: bold;
+    background-color: #fff;
+}
+
+#mail-widget .open {
+    cursor: pointer;
+}
+
+#mail-widget .modal-dialog {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    z-index: 99999;
+    background: rgba(0, 0, 0, 0.6);
+    font-family: Arial, Helvetica, sans-serif;
+   
+}
+
+
+#mail-widget .modal-dialog > div {
+    width: 600px;
+    position: relative;
+    margin: 10% auto;
+    padding: 5px 20px 13px 20px;
+    border-radius: 10px;
+    background: #fff;
+    background: -moz-linear-gradient(#fff, #999);
+    background: -webkit-linear-gradient(#fff, #999);
+    background: -o-linear-gradient(#fff, #999);
+    max-height: 90vh;
+}
+
+#mail-widget .close {
+    background: #606061;
+    color: #FFFFFF;
+    line-height: 25px;
+    position: absolute;
+    right: -12px;
+    text-align: center;
+    top: -10px;
+    width: 24px;
+    text-decoration: none;
+    font-weight: bold;
+    -webkit-border-radius: 12px;
+    -moz-border-radius: 12px;
+    border-radius: 12px;
+    -moz-box-shadow: 1px 1px 3px #000;
+    -webkit-box-shadow: 1px 1px 3px #000;
+    box-shadow: 1px 1px 3px #000;
+    opacity: 100;
+}
+
+#mail-widget .close:hover {
+    background: #f0933c;
+}
+
+#open-modal-message p {
+    text-align: left;
+}
+
+#mail-widget .ajax-loader {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    z-index: 99999;
+    background: rgba(0, 0, 0, 0.6);
+}
+
+#mail-widget .ajax-loader-container {
+    width: 60px;
+    margin-left: auto;
+    margin-right: auto;
+}
