@@ -6,3 +6,12 @@
  2. advanced blockchain explorer frontend for pools and miners
  
  
+ 
+ TODO
+ 
+ frontend blockchain explorer. 
+ 
+ 1. blocks grid with filtering and ajax field controls 
+ 2. pools grid  with filtering and ajax field controls 
+ 
+ 
