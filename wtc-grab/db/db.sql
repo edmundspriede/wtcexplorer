@@ -3,6 +3,7 @@ CREATE TABLE `blocks` (
   `block_number` INTEGER(11) DEFAULT NULL,
   `d_number` INTEGER(11) DEFAULT NULL,
   `d_extraData` VARCHAR(256) COLLATE utf8_latvian_ci DEFAULT NULL,
+  `d_timestamp` INTEGER(11) COLLATE utf8_latvian_ci DEFAULT NULL,
   `blk_number` VARCHAR(256) COLLATE utf8_latvian_ci DEFAULT NULL,
   `blk_difficulty` VARCHAR(256) COLLATE utf8_latvian_ci DEFAULT NULL,
   `blk_extraData` VARCHAR(256) COLLATE utf8_latvian_ci DEFAULT NULL,

@@ -30,7 +30,7 @@
     array('sha3Uncles', ''),
     array('size', ''),
     array('stateRoot', ''),
-    array('timestamp', ''),
+    array('timestamp', 'int'),
     array('totalDifficulty', ''),
     array('transactionsRoot', '')
   );
