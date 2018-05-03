@@ -30,7 +30,7 @@
     array('sha3Uncles', ''),
     array('size', ''),
     array('stateRoot', ''),
-    array('timestamp', ''),
+    array('timestamp', 'int'),
     array('totalDifficulty', ''),
     array('transactionsRoot', '')
   );
@@ -53,15 +53,15 @@
     array('s', '')
   );
 
-  $SQL_S_LAST = 'select coalesce(max(d_number), -1) as m from blocks';
+  $SQL_S_LAST = 'select coalesce(max(d_number), -1) as m from wtc_blocks';
 
-  $SQL_I_BLOCK = 'insert into blocks (block_number, %s) values (?, %s)';
+  $SQL_I_BLOCK = 'insert into wtc_blocks (block_number, %s) values (?, %s)';
 
-  $SQL_I_TX = 'insert into transactions (block_number, number_in_block, %s) values (?, ?, %s)';
+  $SQL_I_TX = 'insert into wtc_transactions (block_number, number_in_block, %s) values (?, ?, %s)';
 
-  $SQL_D_BLOCK = 'delete from blocks where block_number = %d';
+  $SQL_D_BLOCK = 'delete from wtc_blocks where block_number = %d';
 
-  $SQL_D_TX = 'delete from transactions where block_number = %d';
+  $SQL_D_TX = 'delete from wtc_transactions where block_number = %d';
 
   //===============================================================================================
 
