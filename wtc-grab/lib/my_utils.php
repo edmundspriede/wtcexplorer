@@ -28,6 +28,7 @@
   function myStartupParams() {
     global $my_conn;
     //-----------------------
+    $my_conn->autocommit(true);
     //Data format
     //Decimal point
     //etc

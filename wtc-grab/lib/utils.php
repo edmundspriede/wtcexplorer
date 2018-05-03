@@ -30,10 +30,15 @@
   //=====================================================================================
 
   function debug($a, $die = true) {
-    echo '<code>';
-    echo str_replace(array(" ", "\n"), array("&nbsp;", "<br>"), htmlentities(print_r($a, true)));
-    echo '</code><br>';
-    if ($die) die;
+    if (PHP_SAPI != 'cli') {
+      echo '<code>';
+      echo str_replace(array(" ", "\n"), array("&nbsp;", "<br>"), htmlentities(print_r($a, true)));
+      echo '</code><br>';
+      if ($die) die;
+    } else {
+      echo print_r($a, true);
+      if ($die) die;
+    }
   }
 
   //=====================================================================================
