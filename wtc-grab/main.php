@@ -30,7 +30,7 @@
     array('sha3Uncles', ''),
     array('size', ''),
     array('stateRoot', ''),
-    array('timestamp', 'int'),
+    array('timestamp', ''),
     array('totalDifficulty', ''),
     array('transactionsRoot', '')
   );
@@ -57,15 +57,36 @@
 
   $SQL_I_BLOCK = 'insert into blocks (block_number, %s) values (?, %s)';
 
-  $SQL_I_TX = 'insert into transactions (parent_block_number, number_in_block, %s) values (?, ?, %s)';
+  $SQL_I_TX = 'insert into transactions (block_number, number_in_block, %s) values (?, ?, %s)';
+
+  $SQL_D_BLOCK = 'delete from blocks where block_number = %d';
+
+  $SQL_D_TX = 'delete from transactions where block_number = %d';
+
+  //===============================================================================================
+
+  $log_file = null;
 
   //===============================================================================================
 
   FixCLInput(); //Fix params from command line
 
-  function Write($str) {
-    echo $str."<br />";
-    //Add save to log file
+  function Write($str = '') {
+    global $OUTPUT_TO_LOG, $LOG_FILE_NAME, $log_file;
+    //-----------------------
+    if (!isset($str)) $str = '';
+    if ($str != '') $timestamp = date('Y.m.d H:i:s').': '; else $timestamp = '';
+    //-----------------------
+    if ($OUTPUT_TO_LOG) {
+      if ($log_file == null) $log_file = fopen($LOG_FILE_NAME, "a");
+      fwrite($log_file, $timestamp.$str."\n");
+    } else echo $timestamp.$str."\n";
+  }
+
+  function CloseWrite() {
+    global $log_file;
+    //-----------------------
+    if ($log_file != null) fclose($log_file);
   }
 
   //===============================================================================================
@@ -131,9 +152,12 @@
   //===============================================================================================
 
   function SaveBlock($n, $block) {
-    global $BLK_NAMES, $SQL_I_BLOCK;
+    global $BLK_NAMES, $SQL_I_BLOCK, $LOG_BLK_DATA;
     //-----------------------
-    //echo 'BLK - '; print_r($block); //return;
+    if ($LOG_BLK_DATA) {
+      Write('Saving block: '.$n);
+      Write(print_r($block, true));
+    }
     //-----------------------
     $fields = array();
     $params = array();
@@ -168,14 +192,16 @@
     }
     //-----------------------
     $sql = sprintf($SQL_I_BLOCK, implode(', ', $fields), implode(', ', $params));
-    //Write($sql); print_r($data); die;
     myExeSql($sql, $data);
   }
 
   function SaveTx($n, $m, $tx) {
-    global $TX_NAMES, $SQL_I_TX;
+    global $TX_NAMES, $SQL_I_TX, $LOG_BLK_DATA;
     //-----------------------
-    //echo 'TX - '; print_r($tx); //return;
+    if ($LOG_BLK_DATA) {
+      Write('Saving block: '.$n. ', transaction in block: '.$m);
+      Write(print_r($tx, true));
+    }
     //-----------------------
     $fields = array();
     $params = array();
@@ -211,18 +237,58 @@
     }
     //-----------------------
     $sql = sprintf($SQL_I_TX, implode(', ', $fields), implode(', ', $params));
-    //Write($sql); print_r($data); die;
     myExeSql($sql, $data);
   }
 
+  //===============================================================================================
+
+  function GrabBlock($n) {
+    global $WLT, $SQL_D_BLOCK, $SQL_D_TX;
+    //-----------------------
+    $num = Dec2Hex($n);
+    $err = false;
+    //-----------------------
+    //Delete old data if exists
+    try {
+      myExeSql(sprintf($SQL_D_BLOCK, intval($n)));
+      myExeSql(sprintf($SQL_D_TX, intval($n)));
+    } catch (Exception $e) {
+      Write('Block '.$n.' error: ',  $e->getMessage());
+      $err = true;
+    }
+    //-----------------------
+    //Add block
+    try {
+		  $block = $WLT->eth_getBlockByNumber($num);
+      SaveBlock($n, (array)$block);
+    } catch (Exception $e) {
+      Write('Block '.$n.' error: ',  $e->getMessage());
+      $err = true;
+    }
+    //-----------------------
+    //Add transactions
+		$txc = intval(DecodeHex($WLT->eth_getBlockTransactionCountByNumber($num)));
+    if ($txc > 0) {
+		  for ($q = 0; $q < $txc; $q++) {
+        try {
+		      $tx = $WLT->eth_getTransactionByBlockNumberAndIndex($num, Dec2Hex($q));
+          SaveTx($n, $q, (array)$tx);
+        } catch (Exception $e) {
+          Write('Transaction '.$n.'-'.$q.' error: ',  $e->getMessage());
+          $err = true;
+        }
+	    }
+    }
+    //-----------------------
+    if ($err) Write('Block: '.$n.' ('.$num.') - Error'); else Write('Block: '.$n.' ('.$num.') - OK');
+  }
 
   //===============================================================================================
 
   function GetLastBlockDBNum() {
     global $SQL_S_LAST;
     //-----------------------
-    //return intval(myGetValue($SQL_S_LAST, 'm', -1));
-    return 0;
+    return intval(myGetValue($SQL_S_LAST, 'm', -1));
   }
 
   function GetLastBlockWLTNum() {
@@ -233,85 +299,70 @@
 
   //===============================================================================================
 
-  function GrabBlock($n) {
-    global $WLT;
-    //-----------------------
-    $num = Dec2Hex($n);
-    //-----------------------
-    try {
-		  $block = $WLT->eth_getBlockByNumber($num);
-      SaveBlock($n, (array)$block);
-    } catch (Exception $e) {
-      Write('Block '.$n.' error: ',  $e->getMessage());
-    }
-    //-----------------------
-		$txc = intval(DecodeHex($WLT->eth_getBlockTransactionCountByNumber($num)));
-    if ($txc > 0) {
-		  for ($q = 0; $q < $txc; $q++) {
-        try {
-		      $tx = $WLT->eth_getTransactionByBlockNumberAndIndex($num, Dec2Hex($q));
-          SaveTx($n, $q, (array)$tx);
-        } catch (Exception $e) {
-          Write('Transaction '.$n.'-'.$q.' error: ',  $e->getMessage());
-        }
-	    }
-    }
-    //-----------------------
-		/*
-		$uncleCountByHash = $WLT->eth_getUncleCountByBlockHash($block->hash);
-		$uncleCountByNum = $WLT->eth_getUncleCountByBlockNumber($block->number);
-		assertIsHex($uncleCountByHash);
-		assertIsHex($uncleCountByNum);
-		assertEqual($uncleCountByHash, $uncleCountByNum);
-		assertEqual($uncleCountByHash, '0x'.dechex(count($block->uncles)));
-    $unc = DecodeHex($uncleCountByNum);
-    Write($unc);
-    if ($unc > 0) {
-		  $block_unc = array();
-		  for ($q = 0; $q < $unc; $q++) {
-		    $block_unc[] = $WLT->eth_getUncleByBlockNumberAndIndex($num, Dec2Hex($q));
-	    }
-	    print_r($block_unc);// die;
-    }
-    */
-    //-----------------------
-    Write('Block: '.$num.' - OK');
-  }
-
-
-
-  //===============================================================================================
-
-  function Sync() {
+  function Sync($start = -1, $end = -1) {
     global $WLT;
     //-----------------------
     $latest_db = GetLastBlockDBNum();
-    $latest = GetLastBlockWLTNum();
+    $latest_wlt = GetLastBlockWLTNum();
     //-----------------------
-    if (($latest - $latest_db) > 0) {
-      for ($q = $latest_db + 1; $q <= $latest; $q++) {
+    Write('Last DB block: '.$latest_db);
+    Write('Last WLT block: '.$latest_wlt);
+    //-----------------------
+    if ($start > -1) $from = $start; else $from = $latest_db + 1;
+    if ($end > -1) $to = $end; else $to = $latest_wlt;
+    //-----------------------
+    Write('Grabing total bloks: '.strval($to - $from + 1));
+    //-----------------------
+    if ($from <= $to) {
+      Write('Grabing from block: '.$from);
+      Write('Grabing to block: '.$to);
+      for ($q = $from; $q <= $to; $q++) {
         Write('Working on block: '.strval($q));
         GrabBlock($q);
       }
-    }
+    } else Write('No blocks to grab.');
     //-----------------------
     Write('Finished');
   }
 
   //===============================================================================================
 
-  
-  Write('Starting sync...');
-  myConnect();
-  WltConn();
+  Write();
+  Write('=======================================================');
+  Write('================== WTC GRAB STARTING ==================');
+  Write('=======================================================');
 
   //===============================================================================================
 
-  Sync();
+  FixCLInput();
+
+  $start = ldGetParamInt('start', -1); //Starting block
+  $end = ldGetParamInt('end', -1); //Ending block
+
+  if ($start < -1) $start = -1;
+  if ($end < -1) $end = -1;
+  if ($start > $end) $start = $end;
+
+  Write('Param start='.$start);
+  Write('Param end='.$end);
+
+  //===============================================================================================
+
+  myConnect();
+  Write('DB found');
+
+  WltConn();
+  Write('WTC found');
+
+  //===============================================================================================
+
+  Sync($start, $end);
 
   //===============================================================================================
 
   WltClose();
   myClose();
+
+  CloseWrite();
 
 ?>
