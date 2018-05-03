@@ -2,3 +2,5 @@
 nbproject/
 
 wtc-grab/config\.php
+
+*.txt
