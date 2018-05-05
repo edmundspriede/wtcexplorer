@@ -4,3 +4,5 @@ nbproject/
 wtc-grab/config\.php
 
 *.txt
+
+*.log
