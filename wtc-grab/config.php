@@ -5,12 +5,14 @@
   $MY_DB_PASS = 'wtc'; //Password
   $MY_DB_NAME = 'db_wtc'; //Database
 
-  $WLT_HOST = '192.168.10.212';
+  $WLT_HOST = '83.243.93.213';
   $WLT_PORT = 8545;
 
-  $OUTPUT_TO_LOG = false;
+  $OUTPUT_TO_LOG = true;
   $LOG_FILE_NAME = 'wtc-grab.log';
 
   $LOG_BLK_DATA = false;
+
+  $RELOAD_LAST_BLK = 3;
 
 ?>
